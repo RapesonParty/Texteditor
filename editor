@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Text Editor</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #FFFFFF;
+            margin: 0;
+            padding: 1px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .toolbar {
+            display: flex;
+            gap: 1px;
+            margin-bottom: 1px;
+        }
+        #filename {
+            flex-grow: 1;
+            padding: 1px;
+            font-size: 15px;
+            border-radius: 1px;
+        }
+        .btn {
+            padding: 10px 20px;
+            font-size: 15px;
+            color: white;
+            border: none;
+            border-radius: 1px;
+            cursor: pointer;
+        }
+        #open-btn {
+            background-color: #00FF00;
+        }
+        #open-btn:hover {
+            background-color: #00AA00;
+        }
+        #save-btn {
+            background-color: #0000FF;
+        }
+        #save-btn:hover {
+            background-color: #0000AA;
+        }
+        #editor {
+            flex-grow: 1;
+            padding: 1px;
+            font-size: 15px;
+            line-height: 1;
+            border-radius: 1px;
+            resize: none; 
+            outline: none;
+        }
+        #editor:focus {
+            border-color: #000000;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="toolbar">
+        <input type="file" id="file-input" accept=".txt" style="display: none;">
+        
+        <button id="open-btn" class="btn" onclick="document.getElementById('file-input').click()">Open</button>
+        <input type="text" id="filename" placeholder="Enter filename (e.g., my_document)">
+        <button id="save-btn" class="btn" onclick="saveFile()">Save as .txt</button>
+    </div>
+    
+    <textarea id="editor" placeholder="Start typing your text here..."></textarea>
+
+    <script>
+        // dis where me lesotho classic CWC fanfic open
+        document.getElementById('file-input').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return; // stop bcuz no gem
+
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                // 1. put mi aryan writing in editor
+                document.getElementById('editor').value = e.target.result;
+                
+                // 2. put me aryan filename into title
+                let name = file.name;
+                if (name.toLowerCase().endsWith('.txt')) {
+                    name = name.slice(0, -4);
+                }
+                document.getElementById('filename').value = name;
+            };
+            
+            // read me fanfic as text (NO injection nuswas)
+            reader.readAsText(file);
+            
+            // reset input so you can open another file without fucking it (had to learn this the hard way)
+            event.target.value = '';
+        });
+
+        // saving shieeeeeeeet
+        function saveFile() {
+            const textContent = document.getElementById('editor').value;
+            
+            let filename = document.getElementById('filename').value.trim();
+            if (!filename) {
+                filename = 'untitled';
+            }
+
+            if (!filename.endsWith('.txt')) {
+                filename += '.txt';
+            }
+
+            const blob = new Blob([textContent], { type: 'text/plain' });
+
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            URL.revokeObjectURL(link.href);
+        }
+    </script>
+
+</body>
+</html>
